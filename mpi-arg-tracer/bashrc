@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export MPI_ARG_TRACER_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)
+export MPI_ARG_TRACER_LIB="$MPI_ARG_TRACER_BASE"/mpi-arg-trace/build/lib/libmpitracer.so

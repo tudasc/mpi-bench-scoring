@@ -1,0 +1,63 @@
+name: CI-Artifact
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  pull_request:
+
+
+env:
+  CXX: clang++
+  CC: clang
+  OMP_NUM_THREAD: 1
+  CI_SCORE_TEST: 1
+
+jobs:
+  run-corrbench:
+    name: "MPI-Corrbench v1.2.1"
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update apt
+        run: sudo apt-get update
+
+      - name: Install LLVM
+        run: sudo apt-get install libllvm12 llvm-12 llvm-12-dev
+
+      - name: Install Clang
+        run: sudo apt-get install clang-12
+
+      - name: Install OpenMPI
+        run: sudo apt-get install libopenmpi-dev openmpi-bin
+
+      - name: Setup env
+        run: |
+          sudo ln -f -s /usr/bin/clang-12 /usr/bin/clang
+          sudo ln -f -s /usr/bin/clang++-12 /usr/bin/clang++
+          sudo ln -f -s /usr/bin/llvm-symbolizer-12 /usr/bin/llvm-symbolizer
+
+      - name: Setup mpi-arg-tracer
+        working-directory: mpi-arg-tracer
+        run: |
+          bash init.sh
+          source bashrc
+
+      - name: Setup MPI-CorrBench
+        working-directory: mpi-corrbench
+        run: |
+          source bashrc
+          bash init.sh
+
+      - name: Trace MPI-CorrBench
+        working-directory: mpi-corrbench
+        run: |
+          source bashrc
+          bash execute.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: corrbench-trace
+          path: mpi-corrbench/mpi-corrbench/mpi-arg-trace-files
