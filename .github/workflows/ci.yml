@@ -61,3 +61,52 @@ jobs:
         with:
           name: corrbench-trace
           path: mpi-corrbench/mpi-corrbench/mpi-arg-trace-files
+
+
+  run-mbi:
+    name: "MPI Bugs Initiative v1.0.0"
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update apt
+        run: sudo apt-get update
+
+      - name: Install LLVM
+        run: sudo apt-get install libllvm12 llvm-12 llvm-12-dev
+
+      - name: Install Clang
+        run: sudo apt-get install clang-12
+
+      - name: Install OpenMPI
+        run: sudo apt-get install libopenmpi-dev openmpi-bin
+
+      - name: Setup env
+        run: |
+          sudo ln -f -s /usr/bin/clang-12 /usr/bin/clang
+          sudo ln -f -s /usr/bin/clang++-12 /usr/bin/clang++
+          sudo ln -f -s /usr/bin/llvm-symbolizer-12 /usr/bin/llvm-symbolizer
+
+      - name: Setup mpi-arg-tracer
+        working-directory: mpi-arg-tracer
+        run: |
+          bash init.sh
+          source bashrc
+
+      - name: Setup MBI
+        working-directory: mpi-bugs-initiative
+        run: |
+          source bashrc
+          bash init.sh
+
+      - name: Trace MBI
+        working-directory: mpi-bugs-initiative
+        run: |
+          source bashrc
+          bash execute.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mbi-trace
+          path: mpi-bugs-initiative/mbi/mpi-arg-trace-files
