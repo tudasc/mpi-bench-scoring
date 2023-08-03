@@ -1,0 +1,8 @@
+
+export MPI_CORRBENCH_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)/MPI-Corrbench
+
+export MPI_CORRBENCH_TRACER_EXEC_DIR="$MPI_CORRBENCH_BASE"/scripts/tracer
+
+# These are tracer library specifics!
+export MPI_ARG_TRACE_DIR="$MPI_CORRBENCH_BASE"/mpi-arg-trace-files
+export MPI_ARG_TRACE_SKIP_HEADER=1

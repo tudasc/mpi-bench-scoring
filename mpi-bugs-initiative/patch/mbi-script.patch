@@ -1,0 +1,16 @@
+diff --git a/MBI.py b/MBI.py
+index 6bb93cb..29d4bd4 100755
+--- a/MBI.py
++++ b/MBI.py
+@@ -29,9 +29,10 @@ import tools.isp
+ import tools.itac
+ import tools.civl
+ import tools.aislinn
++import tools.mpi_arg_tracer
+ 
+ tools = {'aislinn': tools.aislinn.Tool(), 'civl': tools.civl.Tool(), 'hermes': tools.hermes.Tool(), 'isp': tools.isp.Tool(), 'itac': tools.itac.Tool(), 'mpisv': tools.mpisv.Tool(),
+-         'must': tools.must.Tool(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool()}
++         'must': tools.must.Tool(), 'simgrid': tools.simgrid.Tool(), 'smpi':tools.smpi.Tool(),'smpivg':tools.smpivg.Tool(), 'parcoach': tools.parcoach.Tool(), 'arg-tracer': tools.mpi_arg_tracer.Tool()}
+ 
+ # Some scripts may fail if error messages get translated
+ os.environ["LC_ALL"] = "C"

@@ -1,0 +1,8 @@
+
+export MBI_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)/MpiBugsInitiative
+
+export MBI_TRACER_EXEC_DIR="$MBI_BASE"
+
+# These are tracer library specifics!
+export MPI_ARG_TRACE_DIR="$MBI_BASE"/mpi-arg-trace-files
+export MPI_ARG_TRACE_SKIP_HEADER=1
