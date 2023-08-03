@@ -12,3 +12,4 @@ if [[ $CI_SCORE_TEST == 1 ]]; then
 fi
 
 python3 ./MBI.py -x arg-tracer -t 1 -c run
+

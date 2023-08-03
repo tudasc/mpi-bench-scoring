@@ -1,5 +1,5 @@
 
-export MPI_CORRBENCH_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)/mpi-corrbench 
+export MPI_CORRBENCH_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)/MPI-Corrbench
 
 export MPI_CORRBENCH_TRACER_EXEC_DIR="$MPI_CORRBENCH_BASE"/scripts/tracer
 

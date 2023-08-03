@@ -11,11 +11,13 @@ env:
   CXX: clang++
   CC: clang
   OMP_NUM_THREAD: 1
-  CI_SCORE_TEST: 1
+# to test if the first stage of the CI starts (the data collection)
+# this will cause the plotting stage to fail, as not enough data was collected
+#  CI_SCORE_TEST: 1
 
 jobs:
   run-corrbench:
-    name: "MPI-Corrbench v1.2.1"
+    name: "MPI-Corrbench v1.2.1 Dynamic"
     runs-on: ubuntu-20.04
 
     steps:
@@ -50,7 +52,7 @@ jobs:
         run: |
           source bashrc
           bash init.sh
-
+          
       - name: Trace MPI-CorrBench
         working-directory: mpi-corrbench
         run: |
@@ -60,11 +62,49 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: corrbench-trace
-          path: mpi-corrbench/mpi-corrbench/mpi-arg-trace-files
+          path: mpi-corrbench/MPI-Corrbench/mpi-arg-trace-files
+
+  run-corrbench-static:
+    name: "MPI-Corrbench v1.2.1 Static"
+    runs-on: ubuntu-20.04
+    # Do not ignore bash profile files. From:
+    # https://github.com/marketplace/actions/setup-miniconda
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: s-weigand/setup-conda@v1
+        with:
+            conda-channels: anaconda, conda-forge
+
+      - name: Setup MPI-CorrBench
+        working-directory: mpi-corrbench
+        run: |
+          source bashrc
+          bash init.sh
+          
+      - name: Setup collection of static Data
+        working-directory: mpi-scoring
+        run: |
+          source bashrc
+          bash init.sh
+
+      - name: Statically Analyze MPI-CorrBench
+        working-directory: mpi-corrbench
+        run: |
+          source bashrc
+          bash collect_static_data.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: corrbench-trace
+          path: mpi-corrbench/MPI-Corrbench/mpi-arg-trace-files
 
 
   run-mbi:
-    name: "MPI Bugs Initiative v1.0.0"
+    name: "MPI Bugs Initiative v1.0.0 Dynamic"
     runs-on: ubuntu-20.04
 
     steps:
@@ -109,4 +149,80 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: mbi-trace
-          path: mpi-bugs-initiative/mbi/mpi-arg-trace-files
+          path: mpi-bugs-initiative/MpiBugsInitiative/mpi-arg-trace-files
+
+  run-mbi-static:
+    name: "MPI Bugs Initiative v1.0.0 Static"
+    runs-on: ubuntu-20.04
+    # Do not ignore bash profile files. From:
+    # https://github.com/marketplace/actions/setup-miniconda
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: s-weigand/setup-conda@v1
+        with:
+            conda-channels: anaconda, conda-forge
+
+      - name: Setup MBI
+        working-directory: mpi-bugs-initiative
+        run: |
+          source bashrc
+          bash init.sh
+          
+      - name: Setup collection of static Data
+        working-directory: mpi-scoring
+        run: |
+          source bashrc
+          bash init.sh
+
+      - name: Statically Analyze MBI
+        working-directory: mpi-bugs-initiative
+        run: |
+          source bashrc
+          bash collect_static_data.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mbi-trace
+          path: mpi-bugs-initiative/MpiBugsInitiative/mpi-arg-trace-files
+
+  run-scoring:
+    needs: [run-mbi, run-corrbench,  run-mbi-static,  run-corrbench-static]
+    name: "MPI Usage Pattern Scorer"
+    runs-on: ubuntu-20.04
+    # Do not ignore bash profile files. From:
+    # https://github.com/marketplace/actions/setup-miniconda
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: s-weigand/setup-conda@v1
+        with:
+            conda-channels: anaconda, conda-forge  
+       
+      - name: Setup Scoring
+        working-directory: mpi-scoring
+        run: |
+          source bashrc
+          bash init.sh
+          
+      - uses: actions/download-artifact@v3
+        with:
+          path: mpi-scoring/traces
+          
+      - name: Execute Scoring
+        working-directory: mpi-scoring
+        run: |
+          source bashrc
+          bash execute.sh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: plots
+          path: mpi-scoring/mpi-arg-usage/plots
+

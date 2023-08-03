@@ -1,5 +1,5 @@
 
-export MBI_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)/mbi
+export MBI_BASE=$(cd $(dirname ${BASH_SOURCE:-$0}) && pwd -P)/MpiBugsInitiative
 
 export MBI_TRACER_EXEC_DIR="$MBI_BASE"
 
